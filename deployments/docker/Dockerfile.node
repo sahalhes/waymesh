@@ -1,0 +1,34 @@
+# Multi-stage optimized Docker build for Waymesh Node
+FROM rust:latest AS builder
+
+WORKDIR /app
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
+COPY connectors ./connectors
+
+# Build release binaries for waymesh-server and waymesh-mcp
+RUN cargo build --release --bin waymesh-server --bin waymesh-mcp
+
+# Minimal Debian runtime
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libssl3 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder /app/target/release/waymesh-server /usr/local/bin/waymesh-server
+COPY --from=builder /app/target/release/waymesh-mcp /usr/local/bin/waymesh-mcp
+
+EXPOSE 8080
+
+ENV PORT=8080
+ENV RUST_LOG=waymesh_server=info,tower_http=info
+
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+CMD ["waymesh-server"]

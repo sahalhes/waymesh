@@ -1,0 +1,27 @@
+[package]
+name = "waymesh-server"
+description = "High-performance Axum + PostGIS node server and conversational MCP API for Waymesh"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+waymesh-core = { path = "../waymesh-core" }
+waymesh-solver = { path = "../waymesh-solver" }
+tokio.workspace = true
+tokio-stream = { version = "0.1", features = ["sync"] }
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true
+reqwest.workspace = true
+tokio-postgres = { version = "0.7", features = ["with-uuid-1", "with-chrono-0_4"] }

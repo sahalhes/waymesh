@@ -1,0 +1,17 @@
+{
+  "name": "waymesh-claude-marketplace",
+  "description": "Official Waymesh Mobility & Safe Carpooling Plugins for Claude Code",
+  "owner": {
+    "name": "Waymesh Community",
+    "email": "support@icvalley.tech",
+    "url": "https://waymesh.icvalley.tech"
+  },
+  "plugins": [
+    {
+      "name": "waymesh-mobility",
+      "source": "./waymesh-plugin",
+      "description": "Decentralized peer-to-peer ride sharing, safe carpooling, and crowdshipping logistics on the Waymesh open protocol.",
+      "version": "1.0.0"
+    }
+  ]
+}

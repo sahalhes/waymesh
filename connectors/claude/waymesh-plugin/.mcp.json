@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "waymesh": {
+      "type": "http",
+      "url": "https://waymesh.icvalley.tech/mcp"
+    }
+  }
+}

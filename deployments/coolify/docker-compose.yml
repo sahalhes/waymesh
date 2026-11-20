@@ -1,0 +1,17 @@
+services:
+  waymesh-node:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile.node
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      - PORT=8080
+      - DATABASE_URL=${DATABASE_URL}
+      - RUST_LOG=waymesh_server=info,tower_http=info
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

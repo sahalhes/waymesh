@@ -1,0 +1,15 @@
+{
+  "mcp": {
+    "servers": {
+      "waymesh": {
+        "type": "local",
+        "command": [
+          "./target/release/waymesh-mcp"
+        ],
+        "env": {
+          "WAYMESH_NODE_URL": "http://127.0.0.1:8080"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+[package]
+name = "waymesh-solver"
+description = "Decoupled matching solver trait and spatial-temporal routing implementations for Waymesh"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+waymesh-core = { path = "../waymesh-core" }
+serde.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+async-trait.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

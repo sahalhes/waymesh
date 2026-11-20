@@ -1,0 +1,45 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "waymesh-mobility",
+  "version": "1.0.0",
+  "description": "Decentralized peer-to-peer ride sharing, safe carpooling, and crowdshipping on the Waymesh open protocol.",
+  "author": {
+    "name": "Waymesh Community",
+    "email": "support@icvalley.tech",
+    "url": "https://waymesh.icvalley.tech"
+  },
+  "homepage": "https://waymesh.icvalley.tech",
+  "repository": "https://github.com/sahalhes/waymesh",
+  "license": "Apache-2.0",
+  "keywords": ["mobility", "rideshare", "carpool", "logistics", "gold", "open-protocol"],
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json",
+  "extensions": {
+    "com.openai": {
+      "mcpServers": {
+        "waymesh": {
+          "type": "streamable-http",
+          "url": "https://waymesh.icvalley.tech/mcp"
+        }
+      },
+      "interface": {
+        "displayName": "Waymesh Mobility",
+        "shortDescription": "Peer-to-peer rides & safe carpooling",
+        "longDescription": "Coordinate decentralized ride sharing, safe carpooling, and crowdshipping logistics on the Waymesh open protocol with direct private peer-to-peer (cash, UPI, or mutual agreement) settlement. Strictly enforces same-gender carpooling (males with males, females with females).",
+        "developerName": "Waymesh Protocol",
+        "category": "Travel",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://waymesh.icvalley.tech",
+        "privacyPolicyURL": "https://waymesh.icvalley.tech/health",
+        "termsOfServiceURL": "https://waymesh.icvalley.tech/terms",
+        "defaultPrompt": [
+          "I need safe carpooling from CET to KCVL today at 5:00 PM.",
+          "Publish a commuter ride from Campus North Gate to City Central Railway Station."
+        ],
+        "brandColor": "#10A37F",
+        "logo": "./assets/logo.png",
+        "composerIcon": "./assets/icon.png"
+      }
+    }
+  }
+}

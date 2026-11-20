@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Waymesh Mobility",
+  "name_for_model": "waymesh",
+  "description_for_human": "Peer-to-peer ride sharing, safe carpooling, and crowdshipping logistics on the Waymesh open protocol.",
+  "description_for_model": "Open protocol for searching and booking peer rides, safe carpooling, and parcel hitchhiking along travel corridors. Strictly enforces same-gender ride matching (males with males, females with females). Settle directly between parties privately via UPI, cash, or mutual arrangement.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://waymesh.icvalley.tech/openapi.yaml"
+  },
+  "logo_url": "https://waymesh.icvalley.tech/logo.png",
+  "contact_email": "support@icvalley.tech",
+  "legal_info_url": "https://waymesh.icvalley.tech/health"
+}

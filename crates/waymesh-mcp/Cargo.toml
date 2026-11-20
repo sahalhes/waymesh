@@ -1,0 +1,20 @@
+[package]
+name = "waymesh-mcp"
+description = "Standalone Model Context Protocol (MCP) STDIO binary for Waymesh"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "waymesh-mcp"
+path = "src/main.rs"
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+reqwest.workspace = true
+anyhow.workspace = true
+tracing.workspace = true

@@ -1,0 +1,29 @@
+{
+  "name": "waymesh-mobility",
+  "displayName": "Waymesh Mobility",
+  "version": "1.0.0",
+  "description": "Decentralized peer-to-peer ride sharing, safe carpooling, and crowdshipping logistics on the Waymesh open protocol.",
+  "author": {
+    "name": "Waymesh Community",
+    "email": "support@icvalley.tech",
+    "url": "https://waymesh.icvalley.tech"
+  },
+  "homepage": "https://waymesh.icvalley.tech",
+  "repository": "https://github.com/sahalhes/waymesh",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mobility",
+    "rideshare",
+    "carpool",
+    "logistics",
+    "mcp",
+    "gold",
+    "open-protocol"
+  ],
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://waymesh.icvalley.tech",
+  "supportUrl": "https://waymesh.icvalley.tech",
+  "privacyPolicyUrl": "https://waymesh.icvalley.tech/health",
+  "termsOfServiceUrl": "https://waymesh.icvalley.tech/terms",
+  "mcpServers": "./.mcp.json"
+}

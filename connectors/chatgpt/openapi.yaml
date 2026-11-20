@@ -1,0 +1,472 @@
+openapi: 3.1.0
+info:
+  title: Waymesh Decentralized Mobility and Logistics Node API
+  description: >
+    Connects ChatGPT directly to an independent Waymesh node for ridesharing and parcel crowdshipping.
+    Protocol Rules:
+    1. Gender Separation: Male and female participants are NEVER matched together in passenger rides.
+       Male passengers only match with male drivers/riders; female passengers only match with female drivers/riders.
+       Parcel logistics are gender-agnostic.
+    2. Settlement: Settled directly between parties privately (cash, peer UPI, or private arrangement).
+       Strictly zero cryptocurrency, zero Web3 tokens, zero blockchain gas.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+    description: Configurable Waymesh Node (set via SERVER_URL or WAYMESH_PUBLIC_URL)
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Node health check
+      responses:
+        "200":
+          description: Node is operational
+  /api/v1/identities:
+    post:
+      operationId: registerIdentity
+      summary: Register a user, driver, or carrier cryptographic identity with gender
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - public_key_ed25519
+                - display_name
+              properties:
+                public_key_ed25519:
+                  type: string
+                  description: 64-character hex Ed25519 public key
+                display_name:
+                  type: string
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                  description: Gender for safe ride matching
+      responses:
+        "201":
+          description: Identity registered
+  /api/v1/journeys:
+    post:
+      operationId: publishJourney
+      summary: Publish a planned journey with available seats or cargo capacity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - origin_name
+                - origin_lat
+                - origin_lng
+                - destination_name
+                - destination_lat
+                - destination_lng
+                - departure_time
+              properties:
+                driver_id:
+                  type: string
+                  format: uuid
+                  description: Optional UUID of driver. If omitted, identity is auto-created.
+                driver_name:
+                  type: string
+                  description: Friendly display name (e.g. "Sunita Rao", "Campus Commuter")
+                driver_gender:
+                  type: string
+                  enum: [male, female, other]
+                  description: Driver gender (male and female are never matched together in passenger rides)
+                origin_name:
+                  type: string
+                origin_lat:
+                  type: number
+                origin_lng:
+                  type: number
+                destination_name:
+                  type: string
+                destination_lat:
+                  type: number
+                destination_lng:
+                  type: number
+                departure_time:
+                  type: string
+                  format: date-time
+                seats:
+                  type: integer
+                  default: 3
+                cargo_kg:
+                  type: number
+                  default: 10.0
+                suggested_cost_per_seat:
+                  type: integer
+                  description: Cost per seat in minor units (e.g. paise / cents)
+      responses:
+        "201":
+          description: Journey published successfully
+  /api/v1/matches/search:
+    post:
+      operationId: searchMatches
+      summary: Search for compatible journeys matching passenger ride or parcel delivery demands
+      description: Strictly enforces gender compatibility; male and female are never matched for passenger rides.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pickup_lat
+                - pickup_lng
+                - dropoff_lat
+                - dropoff_lng
+                - desired_time
+                - demand_type
+              properties:
+                pickup_lat:
+                  type: number
+                pickup_lng:
+                  type: number
+                dropoff_lat:
+                  type: number
+                dropoff_lng:
+                  type: number
+                desired_time:
+                  type: string
+                  format: date-time
+                demand_type:
+                  type: string
+                  enum: [passenger, parcel]
+                seats:
+                  type: integer
+                  default: 1
+                cargo_kg:
+                  type: number
+                  default: 0.0
+                passenger_id:
+                  type: string
+                  format: uuid
+                  description: Optional UUID of passenger to lookup profile gender
+                passenger_gender:
+                  type: string
+                  enum: [male, female, other]
+                  description: Passenger gender (must match driver gender; male and female never match)
+      responses:
+        "200":
+          description: Ranked matching candidates
+  /api/v1/ride-requests:
+    post:
+      operationId: publishRideRequest
+      summary: Publish a passenger ride request (commuter demand / wanted ride)
+      description: Use when no matching driver journey is available or when a passenger wants to request a ride. Strictly enforces gender separation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - origin_name
+                - destination_name
+                - desired_time
+                - passenger_gender
+              properties:
+                passenger_id:
+                  type: string
+                  format: uuid
+                  description: Optional UUID of passenger. If omitted, identity is auto-created.
+                passenger_name:
+                  type: string
+                  description: Friendly display name (e.g. "CET Student", "Rahul")
+                passenger_gender:
+                  type: string
+                  enum: [male, female, other]
+                  description: Passenger gender (strictly separated: males match with male drivers, females with female drivers)
+                origin_name:
+                  type: string
+                  description: Departure location or landmark (e.g. "CET, Sreekaryam")
+                origin_lat:
+                  type: number
+                  description: Departure latitude (auto-resolved from known landmarks if omitted or 0)
+                origin_lng:
+                  type: number
+                  description: Departure longitude (auto-resolved from known landmarks if omitted or 0)
+                destination_name:
+                  type: string
+                  description: Destination landmark or station (e.g. "TVM Central Railway Station")
+                destination_lat:
+                  type: number
+                  description: Destination latitude (auto-resolved from known landmarks if omitted or 0)
+                destination_lng:
+                  type: number
+                  description: Destination longitude (auto-resolved from known landmarks if omitted or 0)
+                desired_time:
+                  type: string
+                  format: date-time
+                time_window_minutes:
+                  type: integer
+                  default: 30
+                seats:
+                  type: integer
+                  default: 1
+                max_cost_share:
+                  type: integer
+                  description: Max fare/budget in minor currency units (e.g. 5000 = ₹50.00)
+      responses:
+        "201":
+          description: Ride request published successfully
+  /api/v1/ride-requests/active:
+    get:
+      operationId: getActiveRideRequests
+      summary: List all active open passenger ride requests
+      responses:
+        "200":
+          description: List of active published ride requests
+  /api/v1/ride-requests/search:
+    post:
+      operationId: searchRideRequests
+      summary: Search open passenger ride requests along a driver corridor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - departure_time
+              properties:
+                origin_name:
+                  type: string
+                  description: Optional driver departure landmark
+                origin_lat:
+                  type: number
+                origin_lng:
+                  type: number
+                destination_name:
+                  type: string
+                  description: Optional driver destination landmark
+                destination_lat:
+                  type: number
+                destination_lng:
+                  type: number
+                departure_time:
+                  type: string
+                  format: date-time
+                driver_gender:
+                  type: string
+                  enum: [male, female, other]
+                max_detour_minutes:
+                  type: integer
+                  default: 15
+      responses:
+        "200":
+          description: Matching passenger ride requests
+  /api/v1/ride-requests/{id}:
+    get:
+      operationId: getRideRequestById
+      summary: Get ride request status, driver details, and pickup OTP
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Ride request details
+        "404":
+          description: Ride request not found
+  /api/v1/ride-requests/{id}/accept:
+    post:
+      operationId: acceptRideRequest
+      summary: Driver accepts/fulfills an open passenger ride request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                driver_id:
+                  type: string
+                  format: uuid
+                driver_name:
+                  type: string
+                  description: Driver display name (auto-provisions identity if omitted)
+                driver_gender:
+                  type: string
+                  enum: [male, female, other]
+                journey_id:
+                  type: string
+                  format: uuid
+                agreed_cost_share:
+                  type: integer
+      responses:
+        "200":
+          description: Ride request fulfilled and pickup OTP generated
+  /api/v1/ride-requests/{id}/cancel:
+    post:
+      operationId: cancelRideRequest
+      summary: Cancel an open passenger ride request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Ride request cancelled
+  /api/v1/bookings:
+    post:
+      operationId: createBooking
+      summary: Request a passenger seat on an active journey (rejects opposite gender pairings with 403 Forbidden)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - journey_id
+                - seats
+                - pickup_name
+                - dropoff_name
+                - agreed_cost_share
+              properties:
+                journey_id:
+                  type: string
+                  format: uuid
+                passenger_id:
+                  type: string
+                  format: uuid
+                  description: Optional UUID of registered passenger. If omitted, identity is auto-created.
+                passenger_name:
+                  type: string
+                  description: Friendly display name (e.g. "CET Student", "Priya")
+                passenger_gender:
+                  type: string
+                  enum: [male, female, other]
+                  description: Passenger gender (strictly checked against driver gender)
+                seats:
+                  type: integer
+                pickup_name:
+                  type: string
+                pickup_lat:
+                  type: number
+                pickup_lng:
+                  type: number
+                dropoff_name:
+                  type: string
+                dropoff_lat:
+                  type: number
+                dropoff_lng:
+                  type: number
+                agreed_cost_share:
+                  type: integer
+      responses:
+        "201":
+          description: Booking requested
+        "403":
+          description: Forbidden - gender compatibility constraint violated (male and female cannot match)
+  /api/v1/bookings/{id}/accept:
+    post:
+      operationId: acceptBooking
+      summary: Driver accepts booking and generates passenger pickup OTP
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Booking accepted with OTP
+  /api/v1/bookings/{id}/verify-pickup:
+    post:
+      operationId: verifyBookingPickup
+      summary: Driver verifies passenger 6-digit OTP code at physical pickup
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [otp]
+              properties:
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Pickup verified
+  /api/v1/parcels:
+    post:
+      operationId: createParcel
+      summary: Publish a parcel delivery demand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - recipient_name
+                - recipient_phone
+                - pickup_address
+                - dropoff_address
+                - weight_kg
+                - contents
+                - deadline_time
+                - compensation
+              properties:
+                sender_id:
+                  type: string
+                  format: uuid
+                recipient_name:
+                  type: string
+                recipient_phone:
+                  type: string
+                pickup_address:
+                  type: string
+                pickup_lat:
+                  type: number
+                pickup_lng:
+                  type: number
+                dropoff_address:
+                  type: string
+                dropoff_lat:
+                  type: number
+                dropoff_lng:
+                  type: number
+                weight_kg:
+                  type: number
+                volume_liters:
+                  type: number
+                  default: 5.0
+                contents:
+                  type: string
+                deadline_time:
+                  type: string
+                  format: date-time
+                compensation:
+                  type: integer
+      responses:
+        "201":
+          description: Parcel delivery requested

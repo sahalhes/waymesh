@@ -1,0 +1,15 @@
+{
+  "name": "waymesh-mobility",
+  "version": "1.0.0",
+  "description": "Decentralized peer-to-peer ride sharing, safe carpooling, and crowdshipping logistics on Waymesh.",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Waymesh Mobility",
+    "shortDescription": "Peer-to-peer rides & safe carpooling",
+    "developerName": "Waymesh Protocol",
+    "category": "Travel",
+    "websiteURL": "https://waymesh.icvalley.tech",
+    "privacyPolicyURL": "https://waymesh.icvalley.tech/health"
+  }
+}
